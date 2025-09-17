@@ -1,14 +1,36 @@
 import { Router } from "express";
 import { upload } from "../middlewares/multer.middleware.js";
-import { loginUser, logoutUser, registerUser } from "../controllers/user.controller.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
+import {
+    checkAuth,
+    loginUser,
+    logoutUser,
+    registerUser,
+    uploadAvatar
+} from "../controllers/user.controller.js";
 
 const userRouter = Router();
 
-userRouter.route("/register").post(upload.none(), registerUser);
+userRouter
+    .route("/register")
+    .post(upload.none(), registerUser);
 
-userRouter.route("/login").post(upload.none(), loginUser);
+userRouter
+    .route("/login")
+    .post(upload.none(), loginUser);
 
-userRouter.route("/logout").post(verifyJWT, logoutUser);
+userRouter
+    .route("/logout")
+    .post(verifyJWT, logoutUser);
+
+userRouter
+    .route("/checkAuth")
+    .get(verifyJWT, checkAuth);
+
+userRouter
+    .route("/upload-avatar")
+    .put(verifyJWT, upload.single("avatar"), uploadAvatar);
+
+
 
 export { userRouter }

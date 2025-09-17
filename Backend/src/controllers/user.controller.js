@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { generateToken } from "../utils/generateToken.js";
 import { User } from "../models/user.model.js";
+import { deleteOldFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const isEmailValid = (email) => {
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -130,8 +131,77 @@ const logoutUser = asyncHandler(async (req, res) => {
         );
 });
 
+const checkAuth = asyncHandler(async (req, res) => {
+
+    const user = req.user;
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                user,
+                "Fetched user successfully",
+            )
+        );
+
+});
+
+const uploadAvatar = asyncHandler(async (req, res) => {
+
+    const avatarFilePath = req.file?.path;
+    const oldFilePublicID = req.user?.avatar?.publicID;
+    const user = req.user;
+
+    if (!avatarFilePath) {
+        throw new ApiError(400, "Avatar File not found");
+    }
+
+    const newAvatar = await uploadOnCloudinary(avatarFilePath);
+
+    if (!newAvatar.url || !newAvatar.public_id) {
+        throw new ApiError(500, "Error while uploading on cloudinary");
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(
+        user._id,
+        {
+            $set: {
+                avatar: {
+                    url: newAvatar.url,
+                    publicID: newAvatar.public_id,
+                }
+            }
+        },
+        {
+            new: true,
+        }
+    ).select("-password");
+
+    if (!updatedUser) {
+        throw new ApiError(404, "User not found");
+    }
+
+    if (oldFilePublicID) {
+        deleteOldFromCloudinary(oldFilePublicID);
+    }
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                updatedUser,
+                "Avatar uploaded successfully",
+            )
+        );
+
+});
+
 export {
     registerUser,
     loginUser,
     logoutUser,
+    checkAuth,
+    uploadAvatar,
 }
