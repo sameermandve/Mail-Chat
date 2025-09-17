@@ -1,6 +1,6 @@
 // Utility created to send every error in a constant manner
 
-class ApiErorr extends Error {
+class ApiError extends Error {
 
     constructor(
         statusCode,
@@ -24,4 +24,4 @@ class ApiErorr extends Error {
 
 }
 
-export { ApiErorr }
+export { ApiError }
