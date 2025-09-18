@@ -25,8 +25,12 @@ app.use(cookieParser());
 import { ApiError } from "./utils/ApiError.js";
 
 import { userRouter } from "./routes/userRouter.route.js";
+import { messageRouter } from "./routes/messageRouter.route.js";
+import { friendRouter } from "./routes/friendRouter.route.js";
 
 app.use("/api/v1/users", userRouter);
+app.use("/api/v1/messages", messageRouter);
+app.use("/api/v1/search-friend", friendRouter);
 
 const errorHandler = async (err, req, res, next) => {
     
