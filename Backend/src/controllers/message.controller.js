@@ -2,6 +2,7 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
+import { Message } from "../models/message.model.js";
 import { deleteOldFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const getUsersWhoAreFriendsOnly = asyncHandler(async (req, res) => {
@@ -104,6 +105,78 @@ const getUsersWhoAreFriendsOnly = asyncHandler(async (req, res) => {
 
 });
 
+const sendMessage = asyncHandler(async (req, res) => {
+
+    const { textMessage } = req.body;
+    const media = req.file?.path;
+    const { receiverID: messageReceiverID } = req.params;
+    const messageSenderID = req.user?._id;
+
+    let image_url;
+    if (media) {
+        const uploadRes = await uploadOnCloudinary(media);
+        image_url = uploadRes.url;
+    }
+
+    const newMessage = await Message.create({
+        senderID: messageSenderID,
+        receiverID: messageReceiverID,
+        textMessage,
+        mediaMessage: image_url,
+    });
+
+    await newMessage.save();
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                newMessage,
+                "Message sent successfully",
+            )
+        );
+
+});
+
+const getMessages = asyncHandler(async (req, res) => {
+
+    const { receiverID: messageReceiverID } = req.params;
+    const messageSenderID = req.user?._id;
+
+    if (!messageSenderID || !messageReceiverID) {
+        return res
+            .status(400)
+            .json(
+                new ApiResponse(
+                    400,
+                    {},
+                    "User IDs aree missing",
+                )
+            );
+    };
+
+    const messages = await Message.find({
+        $or: [
+            { senderID: messageSenderID, receiverID: messageReceiverID },
+            { senderID: messageReceiverID, receiverID: messageSenderID },
+        ]
+    });
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                messages,
+                "Messages fetched successfully",
+            )
+        );
+
+});
+
 export {
     getUsersWhoAreFriendsOnly,
+    sendMessage,
+    getMessages,
 }

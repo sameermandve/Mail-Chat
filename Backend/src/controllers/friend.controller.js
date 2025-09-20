@@ -43,21 +43,21 @@ const getSearchedUser = asyncHandler(async (req, res) => {
 const addAsFriend = asyncHandler(async (req, res) => {
 
     const { receiverID } = req.params;
-    const senderId = req.user?._id;
+    const senderID = req.user?._id;
 
     if (!receiverID) {
-        throw new ApiError(400, "Receiver is missing or not found");
+        throw new ApiError(404, "Receiver is missing or not found");
     }
 
-    if (senderId.toString() === receiverID) {
+    if (senderID.toString() === receiverID) {
         throw new ApiError(400, "You cannot add yourself as a friend");
     }
 
     const existingFriendship = await Friend.findOne({
         $or:
             [
-                { person: senderId, friend: receiverID },
-                { person: receiverID, friend: senderId },
+                { person: senderID, friend: receiverID },
+                { person: receiverID, friend: senderID },
             ]
     });
 
@@ -67,7 +67,7 @@ const addAsFriend = asyncHandler(async (req, res) => {
 
     const newFriendship = await Friend.create({
         friend: receiverID,
-        person: senderId,
+        person: senderID,
     });
 
     if (!newFriendship) {
@@ -86,7 +86,44 @@ const addAsFriend = asyncHandler(async (req, res) => {
 
 });
 
+const removeAsFriend = asyncHandler(async (req, res) => {
+
+    const { receiverID } = req.params;
+    const senderID = req.user?._id;
+
+    if (!receiverID) {
+        throw new ApiError(404, "Receiver is missing or not found");
+    }
+
+    if (senderID.toString() === receiverID) {
+        throw new ApiError(400, "You cannot remove yourself as friends");
+    }
+
+    const deleteExistingFriendship = await Friend.findOneAndDelete({
+        $or: [
+            { person: senderID, friend: receiverID },
+            { person: receiverID, friend: senderID }
+        ]
+    });
+
+    if (!deleteExistingFriendship) {
+        throw new ApiError(404, "Friendship does not exist");
+    }
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                {},
+                "User unfriended successfully",
+            )
+        );
+
+});
+
 export {
     getSearchedUser,
     addAsFriend,
+    removeAsFriend,
 }

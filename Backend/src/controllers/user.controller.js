@@ -198,10 +198,42 @@ const uploadAvatar = asyncHandler(async (req, res) => {
 
 });
 
+const deleteUser = asyncHandler(async (req, res) => {
+
+    const userID = req.user?._id;
+    const oldFilePublicID = req.user?.avatar?.publicID;
+
+    if (!userID) {
+        throw new ApiError(404, "User not found");
+    }
+
+    if (oldFilePublicID) {
+        deleteOldFromCloudinary(oldFilePublicID);
+    }
+
+    const deleteExistingUser = await User.findOneAndDelete(userID);
+
+    if (!deleteExistingUser) {
+        throw new ApiError(500, "Something went wrong while deleting user account");
+    }
+
+    return res
+        .status(200)
+        .json(
+            new ApiResponse(
+                200,
+                {},
+                "User account deleted successfully",
+            )
+        );
+
+});
+
 export {
     registerUser,
     loginUser,
     logoutUser,
     checkAuth,
     uploadAvatar,
+    deleteUser,
 }

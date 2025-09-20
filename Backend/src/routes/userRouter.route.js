@@ -3,6 +3,7 @@ import { upload } from "../middlewares/multer.middleware.js";
 import { verifyJWT } from "../middlewares/auth.middleware.js";
 import {
     checkAuth,
+    deleteUser,
     loginUser,
     logoutUser,
     registerUser,
@@ -31,6 +32,8 @@ userRouter
     .route("/upload-avatar")
     .put(verifyJWT, upload.single("avatar"), uploadAvatar);
 
-
+userRouter
+    .route("/delete")
+    .delete(verifyJWT, deleteUser);
 
 export { userRouter }
