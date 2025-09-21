@@ -3,11 +3,12 @@ import { LoginPage } from "./pages/LoginPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { SignupPage } from "./pages/SignupPage";
 
-import Navbar from "./components/Navbar";
+import { Navbar } from "./components/Navbar";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { useAuthStore } from "./stores/useAuthStore";
 import { useEffect } from "react";
 import { Loader } from "lucide-react";
+import { Toaster } from "react-hot-toast";
 
 function App() {
 
@@ -34,6 +35,8 @@ function App() {
                 <Route path="/signup" element={!authUser ? <SignupPage /> : <Navigate to="/" />} />
                 <Route path="/profile" element={authUser ? <ProfilePage /> : <Navigate to="/login" />} />
             </Routes>
+
+            <Toaster />
 
         </>
     )
