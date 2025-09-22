@@ -2,6 +2,7 @@ import { HomePage } from "./pages/HomePage";
 import { LoginPage } from "./pages/LoginPage";
 import { ProfilePage } from "./pages/ProfilePage";
 import { SignupPage } from "./pages/SignupPage";
+import { SearchPage } from "./pages/SearchPage";
 
 import { Navbar } from "./components/Navbar";
 import { Routes, Route, Navigate } from "react-router-dom";
@@ -34,6 +35,7 @@ function App() {
                 <Route path="/login" element={!authUser ? <LoginPage /> : <Navigate to="/" />} />
                 <Route path="/signup" element={!authUser ? <SignupPage /> : <Navigate to="/" />} />
                 <Route path="/profile" element={authUser ? <ProfilePage /> : <Navigate to="/login" />} />
+                <Route path="/search" element={authUser ? <SearchPage /> : <Navigate to="/login" />} />
             </Routes>
 
             <Toaster />
