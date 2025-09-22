@@ -30,7 +30,7 @@ const userSchema = new Schema(
         avatar: {
             url: {
                 type: String,
-                default: "",
+                default: "https://res.cloudinary.com/dhh432tdg/image/upload/v1758554584/avatar_pco8fs.png",
             },
             publicID: {
                 type: String,
