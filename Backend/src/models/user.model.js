@@ -50,6 +50,16 @@ userSchema.pre("save", async function (next) {
     next();
 });
 
+userSchema.pre("save", function (next) {
+    if (this.fullname && typeof this.fullname === "string") {
+        this.fullname = this.fullname
+            .split(" ")
+            .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+            .join(" ");
+    }
+    next();
+});
+
 userSchema.methods.isPasswordValid = async function (pwd) {
     return await bcrypt.compare(pwd, this.password);
 };
