@@ -1,4 +1,4 @@
-import { Loader, Search, UserRoundSearch } from 'lucide-react';
+import { Search, UserRoundSearch } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useSearchStore } from '../stores/useSearchStore.js';
 import toast from 'react-hot-toast';

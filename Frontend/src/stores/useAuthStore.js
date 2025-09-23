@@ -16,8 +16,11 @@ export const useAuthStore = create(
             try {
 
                 const res = await axiosInstance.get("/users/checkAuth");
-                const user = res.data;
-                set({ authUser: user });
+                if (res.data.success) {
+                    set({ authUser: res.data });
+                } else {
+                    set({ authUser: null });
+                }
 
             } catch (error) {
                 console.error(`Error in checkAuth: ${error}`);
@@ -33,8 +36,10 @@ export const useAuthStore = create(
             try {
 
                 const res = await axiosInstance.post("/users/register", data);
-                set({ authUser: res.data });
-                toast.success("User registered successfully");
+                if (res.data.success) {
+                    set({ authUser: res.data });
+                    toast.success("User registered successfully");
+                }
 
             } catch (error) {
                 console.log(error);
@@ -50,8 +55,10 @@ export const useAuthStore = create(
             try {
 
                 const res = await axiosInstance.post("/users/login", data);
-                set({ authUser: res.data });
-                toast.success("Login successful");
+                if (res.data.success) {
+                    set({ authUser: res.data });
+                    toast.success("Login successful");
+                }
 
             } catch (error) {
                 toast.error(error.response.data.message);
@@ -72,14 +79,16 @@ export const useAuthStore = create(
             }
         },
 
-        uploadAvatar: async () => {
+        uploadAvatar: async (data) => {
             set({ isUpdatingProfile: true });
 
-            try { 
+            try {
 
-                const res = await axiosInstance.put("/users/upload-avatar");
-                set({ authUser: res.data });
-                toast.success("Avatar upload successful");
+                const res = await axiosInstance.put("/users/upload-avatar", data);
+                if (res.data.success) {
+                    set({ authUser: res.data });
+                    toast.success("Avatar upload successful");
+                }
 
             } catch (error) {
                 toast.error(error.response.data.message);
@@ -102,7 +111,7 @@ export const useAuthStore = create(
             } finally {
                 set({ isDeletingUser: false });
             }
-        }, 
+        },
 
     })
 );
