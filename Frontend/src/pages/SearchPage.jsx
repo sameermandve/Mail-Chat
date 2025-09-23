@@ -10,18 +10,18 @@ import { useMessageStore } from '../stores/useMessageStore.js';
 function SearchPage() {
 
     const [email, setEmail] = useState("");
-    const { searchedUser, isSearchingUser, searchUser, clearSearch } = useSearchStore();
+    const { searchedUser, isSearchingUser, searchUser, clearSearch, addUserAsFriend, isAddingUserAsFriend, removeUserAsFriend, isRemovingUserAsFriend } = useSearchStore();
     const { fetchFriends, friendsList } = useMessageStore();
 
     useEffect(() => {
         fetchFriends();
-    }, [fetchFriends]);
+    }, [fetchFriends, addUserAsFriend, removeUserAsFriend]);
 
     const location = useLocation();
 
     useEffect(() => {
         clearSearch();
-    }, [location, clearSearch]);
+    }, [location, clearSearch, email]);
 
     const validateInput = () => {
         const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
@@ -48,6 +48,10 @@ function SearchPage() {
     }
 
     const isSearchedUserAFriend = friendsList?.data?.some(user => user._id === searchedUser?.data?._id);
+
+    const handleToggle = (id) => {
+        !isSearchedUserAFriend ? addUserAsFriend(id) : removeUserAsFriend(id);
+    }
 
     return (
         <div className='h-screen'>
@@ -87,10 +91,13 @@ function SearchPage() {
                         searchedUser ?
                             (
                                 <SearchCard
+                                    id={searchedUser.data._id}
                                     img={searchedUser.data.avatar.url}
-                                    username={searchedUser.data.username}
+                                    fullname={searchedUser.data.fullname}
                                     email={searchedUser.data.email}
                                     isFriend={isSearchedUserAFriend}
+                                    handleRequest={handleToggle}
+                                    isLoading={!isSearchedUserAFriend ? isAddingUserAsFriend : isRemovingUserAsFriend}
                                 />
                             ) : (
                                 <div className='w-full h-auto'>

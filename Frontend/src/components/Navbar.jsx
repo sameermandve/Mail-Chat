@@ -6,7 +6,7 @@ function Navbar() {
     const { authUser, logout } = useAuthStore();
 
     return (
-        <header className='bg-base-100 border-b border-base-300 fixed w-full top-0 z-40 backdrop-blur-lg bg-base-100/80 font-[Open_Sans]'>
+        <header className='bg-base-100 border-b border-base-300 fixed w-full top-0 z-40 backdrop-blur-lg font-[Open_Sans]'>
             <div className='container mx-auto px-6 h-16'>
                 <div className='flex items-center justify-between h-full'>
                     {/* Left Side */}
