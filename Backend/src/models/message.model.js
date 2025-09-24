@@ -16,6 +16,7 @@ const messageSchema = new Schema(
         },
         textMessage: {
             type: String,
+            default: "",
         },
         mediaMessage: {
             type: String,

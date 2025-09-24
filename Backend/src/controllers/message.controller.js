@@ -107,15 +107,24 @@ const getUsersWhoAreFriendsOnly = asyncHandler(async (req, res) => {
 
 const sendMessage = asyncHandler(async (req, res) => {
 
-    const { textMessage } = req.body;
+    const { textMessage = "" } = req.body;
     const media = req.file?.path;
     const { receiverID: messageReceiverID } = req.params;
     const messageSenderID = req.user?._id;
 
-    let image_url;
+    if (!textMessage && !media) {
+        throw new ApiError(400, "Cannot send an empty message");
+    }
+
+    let image_url = null;
     if (media) {
         const uploadRes = await uploadOnCloudinary(media);
-        image_url = uploadRes.url;
+        if (uploadRes && uploadRes.url) {
+            image_url = uploadRes.url;
+            console.log(image_url)
+        } else {
+            throw new ApiError(500, "Failed to upload image");
+        }
     }
 
     const newMessage = await Message.create({
@@ -124,8 +133,6 @@ const sendMessage = asyncHandler(async (req, res) => {
         textMessage,
         mediaMessage: image_url,
     });
-
-    await newMessage.save();
 
     return res
         .status(200)
