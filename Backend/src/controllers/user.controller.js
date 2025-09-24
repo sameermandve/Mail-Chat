@@ -3,6 +3,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { generateToken } from "../utils/generateToken.js";
 import { User } from "../models/user.model.js";
+import { Message } from "../models/message.model.js";
 import { deleteOldFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
 
 const isEmailValid = (email) => {
@@ -203,29 +204,57 @@ const deleteUser = asyncHandler(async (req, res) => {
     const userID = req.user?._id;
     const oldFilePublicID = req.user?.avatar?.publicID;
 
-    if (!userID) {
-        throw new ApiError(404, "User not found");
-    }
+    // Start a transaction session
+    const session = await mongoose.startSession();
+    session.startTransaction();
 
-    if (oldFilePublicID) {
-        deleteOldFromCloudinary(oldFilePublicID);
-    }
+    try {
 
-    const deleteExistingUser = await User.findOneAndDelete(userID);
+        if (!userID) {
+            throw new ApiError(404, "User not found");
+        }
 
-    if (!deleteExistingUser) {
-        throw new ApiError(500, "Something went wrong while deleting user account");
-    }
+        if (oldFilePublicID) {
+            await deleteOldFromCloudinary(oldFilePublicID);
+        }
 
-    return res
-        .status(200)
-        .json(
-            new ApiResponse(
-                200,
-                {},
-                "User account deleted successfully",
-            )
+        const deleteExistingMessages = await Message.deleteMany(
+            {
+                $or: [{ senderID: userID }, { receiverID: userID }]
+            },
+            { session },
         );
+
+        if (!deleteExistingMessages) {
+            throw new ApiError(500, "Something went wrong while deleting messages");
+        }
+
+        const deleteExistingUser = await User.findByIdAndDelete(userID, {session});
+
+        if (!deleteExistingUser) {
+            throw new ApiError(500, "Something went wrong while deleting user account");
+        }
+
+        // If all operations were successful, commit the transaction
+        await session.commitTransaction();
+
+        return res
+            .status(200)
+            .clearCookie("jwt")
+            .json(
+                new ApiResponse(
+                    200,
+                    {},
+                    "User account deleted successfully",
+                )
+            );
+
+    } catch (error) {
+        console.log(`Error in deleteUser: ${error}`);
+        throw new ApiError(500, "Something went wrong while deleting User");
+    } finally {
+        session.endSession();
+    }
 
 });
 

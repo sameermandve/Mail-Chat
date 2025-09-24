@@ -116,7 +116,7 @@ const sendMessage = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Cannot send an empty message");
     }
 
-    let image_url = null;
+    let image_url = "";
     if (media) {
         const uploadRes = await uploadOnCloudinary(media);
         if (uploadRes && uploadRes.url) {
@@ -158,24 +158,36 @@ const getMessages = asyncHandler(async (req, res) => {
                 new ApiResponse(
                     400,
                     {},
-                    "User IDs aree missing",
+                    "User IDs are missing",
                 )
             );
     };
 
-    const messages = await Message.find({
+    const conversation = await Message.find({
         $or: [
             { senderID: messageSenderID, receiverID: messageReceiverID },
             { senderID: messageReceiverID, receiverID: messageSenderID },
         ]
-    });
+    }).sort({ createdAt: 1 });
+
+    if (!conversation) {
+        return res
+            .status(200)
+            .json(
+                new ApiResponse(
+                    200,
+                    [],
+                    "No messages found"
+                )
+            );
+    }
 
     return res
         .status(200)
         .json(
             new ApiResponse(
                 200,
-                messages,
+                conversation,
                 "Messages fetched successfully",
             )
         );
