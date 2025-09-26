@@ -79,7 +79,7 @@ const getUsersWhoAreFriendsOnly = asyncHandler(async (req, res) => {
                 _id: 1,
             }
         }
-    ]);
+    ]).sort({createdAt: 1});
 
     if (!friends || friends.length === 0) {
         return res
