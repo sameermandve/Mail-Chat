@@ -102,9 +102,11 @@ function SearchPage() {
                             ) : (
                                 <div className='w-full h-auto'>
                                     <div className='flex items-center justify-center'>
-                                        <div className='flex flex-col items-center gap-2 mt-10'>
+                                        <div className='flex flex-col items-center gap-2 mt-10 space-y-6'>
                                             <h1 className='text-3xl font-bold tracking-wider'>Search for Users</h1>
-                                            <p className='text-xl font-semibold tracking-wide'>No user searched</p>
+                                            <p className='font-semibold tracking-wide text-center text-base-content/70'>
+                                                Easily find and connect with friends on the platform by entering their email address in the search bar.
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
