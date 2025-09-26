@@ -1,7 +1,8 @@
-import { Users } from "lucide-react";
 import { useMessageStore } from "../stores/useMessageStore";
 import { useEffect } from "react";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
+import SidebarNoUser from "./SidebarNoUser";
+import SidebarHead from "./SidebarHead";
 
 function Sidebar() {
 
@@ -11,27 +12,20 @@ function Sidebar() {
         fetchFriends();
     }, [fetchFriends]);
 
-    const list = friendsList?.data;
-
-    if (list?.length === 0) {
-        return (
-            <p>No users found</p>
-        );
-    }
+    const list = [...friendsList];
 
     if (fetchingFriendsList) {
         return <SidebarSkeleton />;
     }
 
+    if (list?.length === 0) {
+        return <SidebarNoUser />;
+    }
+
     return (
         <aside className='h-full w-20 lg:w-72 flex flex-col border-r-2 border-base-300 transition-all duration-200'>
             {/* Sidebar header */}
-            <div className='w-full p-5 border-b border-base-300'>
-                <div className='flex items-center gap-3'>
-                    <Users className="size-6" />
-                    <p className="font-medium hidden lg:block">Contacts</p>
-                </div>
-            </div>
+            <SidebarHead />
             {/* Sidebar header end */}
 
             {/* List of Friends */}
@@ -54,7 +48,7 @@ function Sidebar() {
                             </div>
 
                             <div className="hidden lg:block">
-                                <p className="font-semibold ml-4">{ friend.fullname }</p>
+                                <p className="font-semibold ml-4">{friend.fullname}</p>
                             </div>
                         </button>
                     )

@@ -1,19 +1,15 @@
-import { Users } from 'lucide-react';
+import SidebarHead from '../SidebarHead';
 
 function SidebarSkeleton() {
 
     const skeletons = Array(6).fill(null);
 
     return (
-        <aside className='h-full w-20 lg:w-72 flex flex-col border-r-2 border-base-300 transition-all duration-200 animate-pulse'>
-            <div className='w-full p-5 border-b border-base-300'>
-                <div className='flex items-center gap-3'>
-                    <Users className="size-6" />
-                    <p className="font-medium hidden lg:block">Contacts</p>
-                </div>
-            </div>
+        <aside className='h-full w-20 lg:w-72 flex flex-col border-r-2 border-base-300 transition-all duration-200'>
+            <SidebarHead />
+
             <div
-                className="overflow-y-auto w-full py-3"
+                className="overflow-y-auto w-full py-3 animate-pulse"
             >
                 {skeletons.map((_, idx) => {
                     return (

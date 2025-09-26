@@ -47,7 +47,7 @@ function SearchPage() {
         if (success === true) searchUser({ email });
     }
 
-    const isSearchedUserAFriend = friendsList?.data?.some(user => user._id === searchedUser?.data?._id);
+    const isSearchedUserAFriend = friendsList.some(user => user._id === searchedUser?.data?._id);
 
     const handleToggle = (id) => {
         !isSearchedUserAFriend ? addUserAsFriend(id) : removeUserAsFriend(id);

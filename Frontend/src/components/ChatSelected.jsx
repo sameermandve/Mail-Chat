@@ -58,7 +58,7 @@ function ChatSelected() {
                             </div>
 
                             <div className='chat-footer mt-1'>
-                                <p className='text-base-content/50'>{extractTime(message.createdAt)}</p>
+                                <p className='text-base-content/60 font-medium'>{extractTime(message.createdAt)}</p>
                             </div>
                         </div>
                     );

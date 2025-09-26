@@ -16,7 +16,7 @@ export const useMessageStore = create(
             try {
 
                 const res = await axiosInstance.get("/messages/");
-                set({ friendsList: res.data });
+                set({ friendsList: res.data.data });
 
             } catch (error) {
                 console.log(error);
