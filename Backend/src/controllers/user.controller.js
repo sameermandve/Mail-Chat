@@ -30,7 +30,13 @@ const registerUser = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Password length must be greater than 6");
     }
 
-    const isUserExist = await User.findOne({ email });
+    const isUserExist = await User.findOne({
+        $or: [
+            {fullname : fullname},
+            {username: username},
+            {email: email},
+        ]
+    });
 
     if (isUserExist) {
         throw new ApiError(403, "User already exists");
