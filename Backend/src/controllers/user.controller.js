@@ -204,58 +204,43 @@ const deleteUser = asyncHandler(async (req, res) => {
     const userID = req.user?._id;
     const oldFilePublicID = req.user?.avatar?.publicID;
 
-    // Start a transaction session
-    const session = await mongoose.startSession();
-    session.startTransaction();
+    if (!userID) {
+        throw new ApiError(404, "User not found");
+    }
 
     try {
-
-        if (!userID) {
-            throw new ApiError(404, "User not found");
-        }
 
         if (oldFilePublicID) {
             await deleteOldFromCloudinary(oldFilePublicID);
         }
 
-        const deleteExistingMessages = await Message.deleteMany(
-            {
-                $or: [{ senderID: userID }, { receiverID: userID }]
-            },
-            { session },
-        );
-
-        if (!deleteExistingMessages) {
-            throw new ApiError(500, "Something went wrong while deleting messages");
-        }
-
-        const deleteExistingUser = await User.findByIdAndDelete(userID, {session});
-
-        if (!deleteExistingUser) {
-            throw new ApiError(500, "Something went wrong while deleting user account");
-        }
-
-        // If all operations were successful, commit the transaction
-        await session.commitTransaction();
-
-        return res
-            .status(200)
-            .clearCookie("jwt")
-            .json(
-                new ApiResponse(
-                    200,
-                    {},
-                    "User account deleted successfully",
-                )
-            );
-
     } catch (error) {
-        console.log(`Error in deleteUser: ${error}`);
-        throw new ApiError(500, "Something went wrong while deleting User");
-    } finally {
-        session.endSession();
+        console.error(`Cloudinary deletion failed: ${error}`);
+        throw new ApiError(500, "Cloudinary deletion failed");
     }
 
+    await Message.deleteMany(
+        {
+            $or: [{ senderID: userID }, { receiverID: userID }]
+        },
+    );
+
+    const deleteExistingUser = await User.findByIdAndDelete(userID);
+
+    if (!deleteExistingUser) {
+        throw new ApiError(404, "User not found");
+    }
+
+    return res
+        .status(200)
+        .clearCookie("jwt")
+        .json(
+            new ApiResponse(
+                200,
+                {},
+                "User account deleted successfully",
+            )
+        );
 });
 
 export {
