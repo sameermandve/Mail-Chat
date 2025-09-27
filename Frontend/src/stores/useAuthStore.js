@@ -1,9 +1,12 @@
 import { create } from "zustand";
 import { axiosInstance } from "../utils/axios.js";
 import { toast } from "react-hot-toast";
+import { io } from "socket.io-client";
+
+const BASE_URL = import.meta.env.MODE === "development" ? "http://localhost:5000" : "/";
 
 export const useAuthStore = create(
-    (set) => ({
+    (set, get) => ({
 
         authUser: null,
         isLoggingIn: false,
@@ -11,6 +14,8 @@ export const useAuthStore = create(
         isUpdatingProfile: false,
         isDeletingUser: false,
         isCheckingAuth: true,
+        socket: null,
+        onlineUsers: [],
 
         checkAuth: async () => {
             try {
@@ -18,6 +23,7 @@ export const useAuthStore = create(
                 const res = await axiosInstance.get("/users/checkAuth");
                 if (res.data.success) {
                     set({ authUser: res.data });
+                    get().connectSocket();
                 } else {
                     set({ authUser: null });
                 }
@@ -39,6 +45,7 @@ export const useAuthStore = create(
                 if (res.data.success) {
                     set({ authUser: res.data });
                     toast.success("User registered successfully");
+                    get().connectSocket();
                 }
 
             } catch (error) {
@@ -58,9 +65,11 @@ export const useAuthStore = create(
                 if (res.data.success) {
                     set({ authUser: res.data });
                     toast.success("Login successful");
+                    get().connectSocket();
                 }
 
             } catch (error) {
+                console.error(`Error while login: ${error}`);
                 toast.error(error.response.data.message);
             } finally {
                 set({ isLoggingIn: false });
@@ -73,6 +82,7 @@ export const useAuthStore = create(
                 const res = await axiosInstance.post("/users/logout");
                 set({ authUser: null });
                 toast.success("Logout successful");
+                get().disconnectSocket();
 
             } catch (error) {
                 toast.error(error.response.data.message);
@@ -105,12 +115,35 @@ export const useAuthStore = create(
                 const res = await axiosInstance.delete("/users/delete");
                 set({ authUser: null });
                 toast.success("Account deleted successfully");
+                get().disconnectSocket();
 
             } catch (error) {
                 toast.error(error.response.data.message);
             } finally {
                 set({ isDeletingUser: false });
             }
+        },
+
+        connectSocket: () => {
+            const { authUser } = get();
+
+            if (!authUser || get().socket?.connected) return;
+
+            const socket = io(BASE_URL, {
+                withCredentials: true,
+            });
+
+            socket.connect();
+
+            set({ socket: socket });
+
+            socket.on("getOnlineUsers", (userIDs) => {
+                set({ onlineUsers: userIDs });
+            })
+        },
+
+        disconnectSocket: () => {
+            if (get().socket?.connected) get().socket.disconnect();
         },
 
     })
