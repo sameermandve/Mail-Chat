@@ -1,23 +1,24 @@
 import dotenv from "dotenv";
 
 // Configuration for env file
-
 dotenv.config({
     path: "./.env",
 });
 
-import { app } from "./app.js";
 import { connectDB } from "./db/database.js";
+import { app } from "./app.js";
+import { setupSocket } from "./utils/socket.js";
 
 // Database connection
-
 connectDB()
     .then(() => {
-        app.on("error", () => {
+        const { server } = setupSocket(app);
+
+        server.on("error", () => {
             console.error(`Error while starting the server: ${error}`);
         });
 
-        app.listen(process.env.PORT || 5000, () => {
+        server.listen(process.env.PORT || 5000, () => {
             console.log(`Server running on PORT: ${process.env.PORT}`);
         });
     })
