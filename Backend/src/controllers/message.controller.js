@@ -4,6 +4,7 @@ import { ApiResponse } from "../utils/ApiResponse.js";
 import { User } from "../models/user.model.js";
 import { Message } from "../models/message.model.js";
 import { deleteOldFromCloudinary, uploadOnCloudinary } from "../utils/cloudinary.js";
+import { getIO, getReceiverSocketIDHelper } from "../utils/socket.js";
 
 const getUsersWhoAreFriendsOnly = asyncHandler(async (req, res) => {
 
@@ -112,6 +113,10 @@ const sendMessage = asyncHandler(async (req, res) => {
     const { receiverID: messageReceiverID } = req.params;
     const messageSenderID = req.user?._id;
 
+    const io = getIO();
+    const getReceiverSocketID = getReceiverSocketIDHelper();
+
+
     if (!textMessage && !media) {
         throw new ApiError(400, "Cannot send an empty message");
     }
@@ -133,6 +138,12 @@ const sendMessage = asyncHandler(async (req, res) => {
         textMessage,
         mediaMessage: image_url,
     });
+
+    const receiverSocketID = getReceiverSocketID(messageReceiverID);
+
+    if (receiverSocketID) {
+        io.to(receiverSocketID).emit("newMessage", newMessage);
+    }
 
     return res
         .status(200)

@@ -2,6 +2,9 @@ import { Server } from "socket.io";
 import http from "http";
 import { socketAuthMiddleware } from "../middlewares/socket.auth.middleware.js";
 
+let ioInstance = null;
+let getReceiverSocketID = null;
+
 const setupSocket = (app) => {
     const server = http.createServer(app);
 
@@ -12,8 +15,14 @@ const setupSocket = (app) => {
         }
     });
 
+    ioInstance = io;
+
     // socket auth middleware
     io.use(socketAuthMiddleware);
+
+    getReceiverSocketID = (userID) => {
+        return userSocketMap[userID];
+    }
 
     // for online users
     const userSocketMap = {}; // {userID: socketID}
@@ -39,6 +48,10 @@ const setupSocket = (app) => {
     });
 
     return { io, server };
+
 }
 
-export { setupSocket }
+let getReceiverSocketIDHelper = () => getReceiverSocketID;
+const getIO = () => ioInstance;
+
+export { setupSocket, getReceiverSocketIDHelper, getIO }
