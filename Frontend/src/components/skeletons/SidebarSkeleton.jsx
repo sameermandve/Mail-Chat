@@ -1,4 +1,4 @@
-import SidebarHead from '../SidebarHead';
+import { Users } from 'lucide-react';
 
 function SidebarSkeleton() {
 
@@ -6,7 +6,12 @@ function SidebarSkeleton() {
 
     return (
         <aside className='h-full w-20 lg:w-72 flex flex-col border-r-2 border-base-300 transition-all duration-200'>
-            <SidebarHead />
+            <div className='w-full py-3 px-5 border-b border-base-300 space-y-3'>
+                <div className='flex items-center gap-3'>
+                    <Users className="size-6" />
+                    <p className="font-medium hidden lg:block">Contacts</p>
+                </div>
+            </div>
 
             <div
                 className="overflow-y-auto w-full py-3 animate-pulse"

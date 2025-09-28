@@ -2,7 +2,6 @@ import { useMessageStore } from "../stores/useMessageStore";
 import { useEffect, useState } from "react";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import SidebarNoUser from "./SidebarNoUser";
-import SidebarHead from "./SidebarHead";
 import { useAuthStore } from "../stores/useAuthStore";
 import { Users } from "lucide-react";
 

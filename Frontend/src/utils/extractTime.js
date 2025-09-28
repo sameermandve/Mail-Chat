@@ -8,8 +8,7 @@ function extractTime(rawTime) {
 
     hours = hours % 12 || 12;
 
-    const formattedTime = `${padZero(hours)}:${padZero(minutes)} ${meridian}`
-    console.log(formattedTime)
+    const formattedTime = `${padZero(hours)}:${padZero(minutes)} ${meridian}`;
 
     return formattedTime;
 }

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { useMessageStore } from '../stores/useMessageStore';
 import ChatHeader from './ChatHeader';
 import MessageInput from './MessageInput';
@@ -8,12 +8,23 @@ import { extractTime } from '../utils/extractTime.js';
 
 function ChatSelected() {
 
-    const { fetchMessages, fetchingMessages, messages, selectedUserToChat } = useMessageStore();
+    const { fetchMessages, fetchingMessages, messages, selectedUserToChat, subscribeToMessages, unsubscribeFromMessages } = useMessageStore();
     const { authUser } = useAuthStore();
+    const messageEndRef = useRef(null);
 
     useEffect(() => {
         fetchMessages(selectedUserToChat._id);
-    }, [selectedUserToChat._id, fetchMessages]);
+        subscribeToMessages();
+
+        return () => unsubscribeFromMessages();
+
+    }, [selectedUserToChat._id, fetchMessages, subscribeToMessages, subscribeToMessages]);
+
+    useEffect(() => {
+        if (messageEndRef.current) {
+            messageEndRef.current.scrollIntoView({ behavior: "smooth" });
+        }
+    }, [messages]);
 
     let conversation = [...messages];
 
@@ -63,6 +74,7 @@ function ChatSelected() {
                         </div>
                     );
                 })}
+                <div ref={messageEndRef}></div>
             </div>
             {/* Chat container end */}
 
