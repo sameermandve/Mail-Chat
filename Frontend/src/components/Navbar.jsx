@@ -1,9 +1,15 @@
-import { Link } from "react-router-dom";
-import { ImageUpscaleIcon, LogOut, MessageCircleMore, Search, User } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { LogOut, MessageCircleMore, Search, User, Users } from "lucide-react";
 import { useAuthStore } from "../stores/useAuthStore.js";
+import { useContactsToggle } from "../stores/useContactsToggle.js";
 
 function Navbar() {
     const { authUser, logout } = useAuthStore();
+    const { setSidebarOpen } = useContactsToggle();
+
+    const location = useLocation();
+
+    const disableBtn = location.pathname !== "/";
 
     return (
         <header className='bg-base-100 border-b border-base-300 fixed w-full top-0 z-40 backdrop-blur-lg font-[Open_Sans]'>
@@ -30,7 +36,16 @@ function Navbar() {
                         {/* <div className="absolute md:hidden"></div> */}
                         <div> {/*className="hidden md:block"*/}
                             {authUser && (
-                                <div className="flex gap-4">
+                                <div className="flex gap-3">
+                                    <button
+                                        className="lg:hidden btn btn-sm gap-2 transition-colors"
+                                        onClick={setSidebarOpen}
+                                        disabled={disableBtn}
+                                    >
+                                        <Users className="size-4" />
+                                        <span className="hidden sm:inline">Contacts</span>
+                                    </button>
+
                                     <Link
                                         to={"/search"}
                                         className={`btn btn-sm gap-2 transition-colors`}

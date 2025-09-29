@@ -1,17 +1,29 @@
-import { Search, Users } from 'lucide-react';
+import { Search, Users, X } from 'lucide-react';
 import { Link } from "react-router-dom";
+import { useContactsToggle } from '../stores/useContactsToggle';
 
 function SidebarNoUser() {
+
+    const { isSidebarOpen, setSidebarClose } = useContactsToggle();
+
     return (
-        <aside className='h-full w-20 lg:w-72 flex flex-col border-r-2 border-base-300 transition-all duration-200'>
+        <>
             {/* Sidebar header */}
-            <div className='w-full py-3 px-5 border-b border-base-300 space-y-3'>
-                <div className='flex items-center gap-3'>
-                    <Users className="size-6" />
-                    <p className="font-medium hidden lg:block">Contacts</p>
+            <div className='w-full pt-10 pb-3 lg:py-3 px-5 border-b border-base-300 space-y-3'>
+                <div className='flex items-center justify-between gap-3'>
+                    <div className="flex items-center gap-3">
+                        <Users className="size-6" />
+                        <p className="font-medium block">Contacts</p>
+                    </div>
+                    <div className="lg:hidden">
+                        <X
+                            className="size-5 cursor-pointer"
+                            onClick={setSidebarClose}
+                        />
+                    </div>
                 </div>
 
-                <div className='hidden lg:flex items-center gap-3'>
+                <div className='flex items-center gap-3'>
                     <input
                         type="checkbox"
                         className='checkbox checkbox-xs checkbox-success'
@@ -34,7 +46,7 @@ function SidebarNoUser() {
                     </Link>
                 </div>
             </div>
-        </aside>
+        </>
     );
 }
 

@@ -3,12 +3,14 @@ import { useEffect, useState } from "react";
 import SidebarSkeleton from "./skeletons/SidebarSkeleton";
 import SidebarNoUser from "./SidebarNoUser";
 import { useAuthStore } from "../stores/useAuthStore";
-import { Users } from "lucide-react";
+import { Users, X } from "lucide-react";
+import { useContactsToggle } from "../stores/useContactsToggle";
 
 function Sidebar() {
 
     const { friendsList, fetchFriends, fetchingFriendsList, selectedUserToChat, setSelectedUserToChat } = useMessageStore();
     const { onlineUsers } = useAuthStore();
+    const { isSidebarOpen, setSidebarClose } = useContactsToggle();
 
     const [showOnline, setShowOnline] = useState(false);
 
@@ -23,20 +25,37 @@ function Sidebar() {
         return <SidebarSkeleton />;
     }
 
-    if (list?.length === 0) {
-        return <SidebarNoUser />;
+    if (list?.length === 0 && !showOnline) {
+        return (
+            <aside
+                className={`h-full w-3/4 sm:w-1/2 lg:w-72 flex flex-col px-2 border-r-2 border-base-300 bg-base-300 lg:bg-transparent fixed top-0 left-0 z-50 transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:static lg:translate-x-0 lg:w-72`}
+            >
+                < SidebarNoUser />
+            </aside>
+        );
     }
 
     return (
-        <aside className='h-full w-20 lg:w-72 flex flex-col border-r-2 border-base-300 transition-all duration-200'>
+        // h-full w-20 lg:w-72 flex flex-col border-r-2 border-base-300 transition-all duration-200
+        <aside
+            className={`h-full w-3/4 sm:w-1/2 lg:w-72 flex flex-col px-2 border-r-2 border-base-300 bg-base-300 lg:bg-transparent fixed top-0 left-0 z-50 transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:static lg:translate-x-0 lg:w-72`}
+        >
             {/* Sidebar header */}
-            <div className='w-full py-3 px-5 border-b border-base-300 space-y-3'>
-                <div className='flex items-center gap-3'>
-                    <Users className="size-6" />
-                    <p className="font-medium hidden lg:block">Contacts</p>
+            <div className='w-full pt-10 pb-3 lg:py-3 px-3 border-b border-base-300 space-y-3'>
+                <div className='flex items-center justify-between gap-3'>
+                    <div className="flex items-center gap-3">
+                        <Users className="size-6" />
+                        <p className="font-medium block">Contacts</p>
+                    </div>
+                    <div className="lg:hidden">
+                        <X
+                            className="size-5 cursor-pointer"
+                            onClick={setSidebarClose}
+                        />
+                    </div>
                 </div>
 
-                <div className='hidden lg:flex items-center gap-3'>
+                <div className='flex items-center gap-3'>
                     <input
                         type="checkbox"
                         checked={showOnline}
@@ -50,7 +69,7 @@ function Sidebar() {
 
             {/* List of Friends */}
             <div
-                className="overflow-y-auto w-full py-3"
+                className="overflow-y-auto w-full py-3 px-10 lg:px-0"
             >
                 {list && list.map((friend) => {
                     return (
@@ -68,7 +87,7 @@ function Sidebar() {
                                 </div>
                             </div>
 
-                            <div className="hidden lg:flex flex-col items-start">
+                            <div className="flex flex-col items-start">
                                 <p className="font-semibold ml-2">{friend.fullname}</p>
                                 <p
                                     className={`font-medium mt-1 ml-2 text-xs tracking-wider ${onlineUsers.includes(friend._id) ? "" : "text-base-content/60"}`}
