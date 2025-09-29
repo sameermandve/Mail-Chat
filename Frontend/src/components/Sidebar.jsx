@@ -36,7 +36,6 @@ function Sidebar() {
     }
 
     return (
-        // h-full w-20 lg:w-72 flex flex-col border-r-2 border-base-300 transition-all duration-200
         <aside
             className={`h-full w-3/4 sm:w-1/2 lg:w-72 flex flex-col px-2 border-r-2 border-base-300 bg-base-300 lg:bg-transparent fixed top-0 left-0 z-50 transition-transform duration-300 ease-in-out ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"} lg:static lg:translate-x-0 lg:w-72`}
         >
