@@ -1,0 +1,22 @@
+{
+    "name": "mailchat",
+    "version": "1.0.0",
+    "description": "This repository contains the backend server and frontend of a personalized messaging web app includes image sharing, near real-time messaging, presence indicators, friend search by email, and user profile management. It is built with a Node.js and Express backend, along with a React frontend that uses modern state management and UI patterns for a fast and reliable chat experience.",
+    "main": "index.js",
+    "scripts": {
+        "build": "npm install --prefix Backend && npm install --prefix Frontend && npm run build --prefix Frontend",
+        "start": "npm run start --prefix Backend"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/sameermandve/Mail-Chat.git"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "bugs": {
+        "url": "https://github.com/sameermandve/Mail-Chat/issues"
+    },
+    "homepage": "https://github.com/sameermandve/Mail-Chat#readme"
+}
