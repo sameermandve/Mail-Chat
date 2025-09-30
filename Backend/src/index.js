@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import path from "path";
+import { fileURLToPath } from "url";
 import express from "express";
 
 // Configuration for env file
@@ -22,7 +23,7 @@ connectDB()
         if (process.env.NODE_ENV === "production") {
             app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-            app.get("*", (_, res) => {
+            app.get(/.*/, (_, res) => {
                 res.sendFile(path.join(__dirname, "../frontend", "dist", "index.html"));
             });
         }
