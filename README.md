@@ -1,5 +1,7 @@
 # MailChat 
 
+![head](https://res.cloudinary.com/dhh432tdg/image/upload/v1759331204/Chat-Page_p1suyd.png)
+
 This repository contains the backend server and frontend of a personalized messaging web app includes image sharing, near real-time messaging, presence indicators, friend search by email, and user profile management. It is built with a Node.js and Express backend, along with a React frontend that uses modern state management and UI patterns for a fast and reliable chat experience.
 
 ## Key Features
