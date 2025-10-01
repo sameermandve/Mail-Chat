@@ -1,6 +1,5 @@
 import dotenv from "dotenv";
 import path from "path";
-import express from "express";
 
 // Configuration for env file
 dotenv.config({
@@ -17,14 +16,6 @@ const __dirname = path.resolve();
 connectDB()
     .then(() => {
         const { server } = setupSocket(app);
-
-        if (process.env.NODE_ENV === "production") {
-            app.use(express.static(path.join(__dirname, "../Frontend/dist")));
-
-            app.get("*", (_, res) => {
-                res.sendFile(path.join(__dirname, "../Frontend/dist/index.html"));
-            });
-        }
 
         server.on("error", () => {
             console.error(`Error while starting the server: ${error}`);
