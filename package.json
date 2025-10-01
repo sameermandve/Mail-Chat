@@ -4,8 +4,8 @@
     "description": "This repository contains the backend server and frontend of a personalized messaging web app includes image sharing, near real-time messaging, presence indicators, friend search by email, and user profile management. It is built with a Node.js and Express backend, along with a React frontend that uses modern state management and UI patterns for a fast and reliable chat experience.",
     "main": "index.js",
     "scripts": {
-        "build": "npm install --prefix backend && npm install --prefix frontend && npm run build --prefix frontend",
-        "start": "npm run start --prefix backend"
+        "build": "npm install --prefix Backend && npm install --prefix Frontend && npm run build --prefix Frontend",
+        "start": "npm run start --prefix Backend"
     },
     "repository": {
         "type": "git",
